@@ -12,4 +12,4 @@ Proyecto: Gestor de inventario "Tienda JNB"
 Sistema de ventas
 -Vista de empleado.
 -Procedimiento de venta.
--Actualizacion de ventas.
+-Actualizacion de ventas..
