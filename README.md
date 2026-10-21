@@ -1,6 +1,6 @@
 Proyecto: Gestor de inventario "Tienda JNB"
 
-(Nathymej)
+(Nathali Beatriz Lopez Mejia)
 -Seguridad/ login admin y empleado.
 -Menu.
 
