@@ -10,15 +10,9 @@ int main (){
     cout << "1. Inciar Sesion como admin" << endl;
     cout << "2. inciar Sescion como empleado" << endl;
 
-    switch (expression)
-    {
-    case constant expression:
-        /* code */
-        break;
-    
-    default:
-        break;
-    }
+
+
+    // Sistema de ventas //
 
     return 0;
 }
