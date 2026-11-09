@@ -6,7 +6,7 @@ Proyecto: Gestor de inventario "Tienda JNB"
 
 (Brandon Anthonio Salguero Avelar)
 -Registro de articulos.
--listado de artculos.
+-listado de articulos.
 
 (Jonathan Gerardo Guzman Guevara)
 Sistema de ventas
