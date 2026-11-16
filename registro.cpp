@@ -105,7 +105,7 @@ void registrarProducto()
 
     cout << "Ingrese el nombre del producto: ";
     getline(cin >> ws, nombre);
-    cout << "Ingrese la clasificación del producto: ";
+    cout << "Ingrese la clasificacion del producto: ";
     getline(cin >> ws, clasificacion);
     cout << "Ingrese la cantidad del producto: ";
     cin >> cantidad;
@@ -123,19 +123,31 @@ void listarInventario()
 {
     if (totalProductos == 0)
     {
-        cout << "El inventario está vacío." << endl;
+        cout << "El inventario esta vacio." << endl;
         return;
     }
+
+    cout << left << setw(14) << "Nombre"
+         << setw(16) << "Clasificacion"
+         << setw(10) << "Cantidad"
+         << setw(10) << "Precio" << endl;
+
+    cout << string(50, '-') << endl;
+    cout << fixed << setprecision(2);
+
     for (int i = 0; i < totalProductos; i++)
     {
-        cout << nombres[i] << " | " << clasificaciones[i] << " | "
-             << cantidades[i] << " | " << precios[i] << endl;
+        cout << left << setw(14) << nombres[i]
+             << setw(16) << clasificaciones[i]
+             << setw(10) << cantidades[i]
+             << setw(10) << precios[i] << endl;
     }
 }
-
 int main()
 {
     cargarInventarioInicial();
     listarInventario();
+
+
     return 0;
 }
