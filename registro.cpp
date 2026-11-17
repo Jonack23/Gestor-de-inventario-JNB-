@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <limits>
 using namespace std;
 
 const int MAX = 100;
@@ -24,6 +25,86 @@ int totalProductos = 0;
 // leche | lacteos | 10 | 1.2
 // queso | lacteos | 5 | 2.0
 // yogurt | lacteos | 8 | 1.5
+
+// ---------- Funciones auxiliares ----------
+
+// Convierte un texto a minusculas (para comparar nombres sin importar mayusculas)
+string aMinusculas(string texto)
+{
+    for (int i = 0; i < (int)texto.length(); i++)
+    {
+        texto[i] = tolower((unsigned char)texto[i]);
+    }
+    return texto;
+}
+
+// Busca un producto por nombre. Devuelve su posicion o -1 si no existe
+int buscarProducto(string nombre)
+{
+    string buscado = aMinusculas(nombre);
+    for (int i = 0; i < totalProductos; i++)
+    {
+        if (aMinusculas(nombres[i]) == buscado)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Pide un texto que no puede quedar vacio
+string leerTexto(string mensaje)
+{
+    string texto;
+    do
+    {
+        cout << mensaje;
+        getline(cin >> ws, texto);
+        if (texto.empty())
+        {
+            cout << "El texto no puede estar vacio." << endl;
+        }
+    } while (texto.empty());
+    return texto;
+}
+
+// Pide un entero >= minimo. Repite hasta que el dato sea valido
+int leerEntero(string mensaje, int minimo)
+{
+    int valor;
+    while (true)
+    {
+        cout << mensaje;
+        if (cin >> valor && valor >= minimo)
+        {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return valor;
+        }
+        cout << "Dato invalido. Ingrese un numero entero mayor o igual a " << minimo << "." << endl;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// Pide un decimal > 0. Repite hasta que el dato sea valido
+float leerPrecio(string mensaje)
+{
+    float valor;
+    while (true)
+    {
+        cout << mensaje;
+        if (cin >> valor && valor > 0)
+        {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return valor;
+        }
+        cout << "Dato invalido. Ingrese un precio mayor que 0." << endl;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// ---------- Funciones principales ----------
 
 void cargarInventarioInicial()
 {
@@ -94,23 +175,21 @@ void registrarProducto()
 {
     if (totalProductos >= MAX)
     {
-        cout << "Inventario lleno. No se pueden agregar más productos." << endl;
+        cout << "Inventario lleno. No se pueden agregar mas productos." << endl;
         return;
     }
 
-    string nombre;
-    string clasificacion;
-    int cantidad;
-    float precio;
+    string nombre = leerTexto("Ingrese el nombre del producto: ");
 
-    cout << "Ingrese el nombre del producto: ";
-    getline(cin >> ws, nombre);
-    cout << "Ingrese la clasificacion del producto: ";
-    getline(cin >> ws, clasificacion);
-    cout << "Ingrese la cantidad del producto: ";
-    cin >> cantidad;
-    cout << "Ingrese el precio del producto: ";
-    cin >> precio;
+    if (buscarProducto(nombre) != -1)
+    {
+        cout << "Ese producto ya existe en el inventario." << endl;
+        return;
+    }
+
+    string clasificacion = leerTexto("Ingrese la clasificacion del producto: ");
+    int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0);
+    float precio = leerPrecio("Ingrese el precio del producto: ");
 
     nombres[totalProductos] = nombre;
     clasificaciones[totalProductos] = clasificacion;
@@ -118,7 +197,9 @@ void registrarProducto()
     precios[totalProductos] = precio;
 
     totalProductos++;
+    cout << "Producto registrado correctamente." << endl;
 }
+
 void listarInventario()
 {
     if (totalProductos == 0)
@@ -127,27 +208,69 @@ void listarInventario()
         return;
     }
 
-    cout << left << setw(14) << "Nombre"
+    cout << left << setw(5) << "No."
+         << setw(14) << "Nombre"
          << setw(16) << "Clasificacion"
          << setw(10) << "Cantidad"
-         << setw(10) << "Precio" << endl;
+         << setw(10) << "Precio"
+         << "Estado" << endl;
 
-    cout << string(50, '-') << endl;
+    cout << string(62, '-') << endl;
     cout << fixed << setprecision(2);
 
     for (int i = 0; i < totalProductos; i++)
     {
-        cout << left << setw(14) << nombres[i]
+        cout << left << setw(5) << (i + 1)
+             << setw(14) << nombres[i]
              << setw(16) << clasificaciones[i]
              << setw(10) << cantidades[i]
-             << setw(10) << precios[i] << endl;
+             << setw(10) << precios[i];
+
+        if (cantidades[i] == 0)
+        {
+            cout << "AGOTADO";
+        }
+        else if (cantidades[i] <= 5)
+        {
+            cout << "Stock bajo";
+        }
+        else
+        {
+            cout << "Disponible";
+        }
+        cout << endl;
     }
 }
+
+// Menu temporal para probar tus funciones (luego se integra con el menu de Nathali)
 int main()
 {
     cargarInventarioInicial();
-    listarInventario();
 
+    int opcion;
+    do
+    {
+        cout << "\n===== TIENDA JNB (prueba) =====" << endl;
+        cout << "1. Registrar producto" << endl;
+        cout << "2. Listar inventario" << endl;
+        cout << "0. Salir" << endl;
+        opcion = leerEntero("Opcion: ", 0);
+
+        switch (opcion)
+        {
+        case 1:
+            registrarProducto();
+            break;
+        case 2:
+            listarInventario();
+            break;
+        case 0:
+            cout << "Saliendo..." << endl;
+            break;
+        default:
+            cout << "Opcion no valida." << endl;
+        }
+    } while (opcion != 0);
 
     return 0;
 }
