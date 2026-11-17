@@ -214,6 +214,30 @@ string estadoStock(int cantidad)
     return "Disponible";
 }
 
+// Imprime el encabezado de la tabla de productos
+void imprimirEncabezado()
+{
+    cout << left << setw(5) << "No."
+         << setw(14) << "Nombre"
+         << setw(16) << "Clasificacion"
+         << setw(10) << "Cantidad"
+         << setw(10) << "Precio"
+         << "Estado" << endl;
+    cout << string(62, '-') << endl;
+}
+
+// Imprime una fila de la tabla con el producto en la posicion i
+void imprimirFila(int i)
+{
+    cout << fixed << setprecision(2);
+    cout << left << setw(5) << (i + 1)
+         << setw(14) << nombres[i]
+         << setw(16) << clasificaciones[i]
+         << setw(10) << cantidades[i]
+         << setw(10) << precios[i]
+         << estadoStock(cantidades[i]) << endl;
+}
+
 void listarInventario()
 {
     if (totalProductos == 0)
@@ -222,24 +246,10 @@ void listarInventario()
         return;
     }
 
-    cout << left << setw(5) << "No."
-         << setw(14) << "Nombre"
-         << setw(16) << "Clasificacion"
-         << setw(10) << "Cantidad"
-         << setw(10) << "Precio"
-         << "Estado" << endl;
-
-    cout << string(62, '-') << endl;
-    cout << fixed << setprecision(2);
-
+    imprimirEncabezado();
     for (int i = 0; i < totalProductos; i++)
     {
-        cout << left << setw(5) << (i + 1)
-             << setw(14) << nombres[i]
-             << setw(16) << clasificaciones[i]
-             << setw(10) << cantidades[i]
-             << setw(10) << precios[i]
-             << estadoStock(cantidades[i]) << endl;
+        imprimirFila(i);
     }
 }
 
@@ -261,22 +271,9 @@ void buscarPorNombre()
         {
             if (encontrados == 0)
             {
-                cout << left << setw(5) << "No."
-                     << setw(14) << "Nombre"
-                     << setw(16) << "Clasificacion"
-                     << setw(10) << "Cantidad"
-                     << setw(10) << "Precio"
-                     << "Estado" << endl;
-                cout << string(62, '-') << endl;
-                cout << fixed << setprecision(2);
+                imprimirEncabezado();
             }
-
-            cout << left << setw(5) << (i + 1)
-                 << setw(14) << nombres[i]
-                 << setw(16) << clasificaciones[i]
-                 << setw(10) << cantidades[i]
-                 << setw(10) << precios[i]
-                 << estadoStock(cantidades[i]) << endl;
+            imprimirFila(i);
             encontrados++;
         }
     }
@@ -288,6 +285,71 @@ void buscarPorNombre()
     else
     {
         cout << "\nProductos encontrados: " << encontrados << endl;
+    }
+}
+
+// Muestra las clasificaciones distintas que existen en el inventario
+void mostrarClasificaciones()
+{
+    cout << "Clasificaciones disponibles: ";
+    int mostradas = 0;
+    for (int i = 0; i < totalProductos; i++)
+    {
+        bool repetida = false;
+        for (int j = 0; j < i; j++)
+        {
+            if (aMinusculas(clasificaciones[j]) == aMinusculas(clasificaciones[i]))
+            {
+                repetida = true;
+                break;
+            }
+        }
+        if (!repetida)
+        {
+            if (mostradas > 0)
+            {
+                cout << ", ";
+            }
+            cout << clasificaciones[i];
+            mostradas++;
+        }
+    }
+    cout << endl;
+}
+
+// Lista solo los productos de una clasificacion (sin importar mayusculas)
+void filtrarPorClasificacion()
+{
+    if (totalProductos == 0)
+    {
+        cout << "El inventario esta vacio." << endl;
+        return;
+    }
+
+    mostrarClasificaciones();
+    string clasificacion = aMinusculas(leerTexto("Ingrese la clasificacion a mostrar: "));
+    int encontrados = 0;
+
+    for (int i = 0; i < totalProductos; i++)
+    {
+        if (aMinusculas(clasificaciones[i]) == clasificacion)
+        {
+            if (encontrados == 0)
+            {
+                imprimirEncabezado();
+            }
+            imprimirFila(i);
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+    {
+        cout << "No hay productos en esa clasificacion." << endl;
+    }
+    else
+    {
+        cout << "\nProductos en la clasificacion: " << encontrados << endl;
     }
 }
 
@@ -303,6 +365,7 @@ int main()
         cout << "1. Registrar producto" << endl;
         cout << "2. Listar inventario" << endl;
         cout << "3. Buscar producto por nombre" << endl;
+        cout << "4. Filtrar por clasificacion" << endl;
         cout << "0. Salir" << endl;
         opcion = leerEntero("Opcion: ", 0);
 
@@ -316,6 +379,9 @@ int main()
             break;
         case 3:
             buscarPorNombre();
+            break;
+        case 4:
+            filtrarPorClasificacion();
             break;
         case 0:
             cout << "Saliendo..." << endl;
