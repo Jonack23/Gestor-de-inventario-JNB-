@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include <limits>
 using namespace std;
 
 const int MAX = 100;
@@ -52,123 +51,67 @@ int buscarProducto(string nombre)
     return -1;
 }
 
-// Pide un texto que no puede quedar vacio
-string leerTexto(string mensaje)
-{
-    string texto;
-    do
-    {
-        cout << mensaje;
-        getline(cin >> ws, texto);
-        if (texto.empty())
-        {
-            cout << "El texto no puede estar vacio." << endl;
-        }
-    } while (texto.empty());
-    return texto;
-}
-
-// Pide un entero >= minimo. Repite hasta que el dato sea valido
+// Pide un entero >= minimo. Repite con do-while hasta que el dato sea valido
 int leerEntero(string mensaje, int minimo)
 {
     int valor;
-    while (true)
+    bool valido;
+    do
     {
         cout << mensaje;
-        if (cin >> valor && valor >= minimo)
+        cin >> valor;
+        valido = !cin.fail() && valor >= minimo;
+        if (!valido)
         {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return valor;
+            cout << "Dato invalido. Ingrese un numero entero mayor o igual a " << minimo << "." << endl;
+            cin.clear();            // quita el error de cin (por si escribieron letras)
+            cin.ignore(1000, '\n'); // descarta lo que quedo escrito en la linea
         }
-        cout << "Dato invalido. Ingrese un numero entero mayor o igual a " << minimo << "." << endl;
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+    } while (!valido);
+    cin.ignore(1000, '\n');
+    return valor;
 }
 
-// Pide un decimal > 0. Repite hasta que el dato sea valido
+// Pide un precio > 0. Repite con do-while hasta que el dato sea valido
 float leerPrecio(string mensaje)
 {
     float valor;
-    while (true)
+    bool valido;
+    do
     {
         cout << mensaje;
-        if (cin >> valor && valor > 0)
+        cin >> valor;
+        valido = !cin.fail() && valor > 0;
+        if (!valido)
         {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return valor;
+            cout << "Dato invalido. Ingrese un precio mayor que 0." << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
         }
-        cout << "Dato invalido. Ingrese un precio mayor que 0." << endl;
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+    } while (!valido);
+    cin.ignore(1000, '\n');
+    return valor;
 }
 
 // ---------- Funciones principales ----------
 
 void cargarInventarioInicial()
 {
-    nombres[0] = "coca cola";
-    clasificaciones[0] = "bebida";
-    cantidades[0] = 10;
-    precios[0] = 1.5;
-
-    nombres[1] = "pepsi";
-    clasificaciones[1] = "bebida";
-    cantidades[1] = 5;
-    precios[1] = 1.2;
-
-    nombres[2] = "agua";
-    clasificaciones[2] = "bebida";
-    cantidades[2] = 20;
-    precios[2] = 0.8;
-
-    nombres[3] = "lays";
-    clasificaciones[3] = "snack";
-    cantidades[3] = 8;
-    precios[3] = 1.3;
-
-    nombres[4] = "m&m's";
-    clasificaciones[4] = "snack";
-    cantidades[4] = 6;
-    precios[4] = 1.2;
-
-    nombres[5] = "gomitas";
-    clasificaciones[5] = "snack";
-    cantidades[5] = 10;
-    precios[5] = 0.5;
-
-    nombres[6] = "detergente";
-    clasificaciones[6] = "limpieza";
-    cantidades[6] = 3;
-    precios[6] = 2.5;
-
-    nombres[7] = "lejia";
-    clasificaciones[7] = "limpieza";
-    cantidades[7] = 0;
-    precios[7] = 1.8;
-
-    nombres[8] = "jabon";
-    clasificaciones[8] = "limpieza";
-    cantidades[8] = 5;
-    precios[8] = 1.0;
-
-    nombres[9] = "leche";
-    clasificaciones[9] = "lacteos";
-    cantidades[9] = 10;
-    precios[9] = 1.2;
-
-    nombres[10] = "queso";
-    clasificaciones[10] = "lacteos";
-    cantidades[10] = 5;
-    precios[10] = 2.0;
-
-    nombres[11] = "yogurt";
-    clasificaciones[11] = "lacteos";
-    cantidades[11] = 8;
-    precios[11] = 1.5;
+    string n[] = {"coca cola", "pepsi", "agua", "lays", "m&m's", "gomitas",
+                  "detergente", "lejia", "jabon", "leche", "queso", "yogurt"};
+    string c[] = {"bebida", "bebida", "bebida", "snack", "snack", "snack",
+                  "limpieza", "limpieza", "limpieza", "lacteos", "lacteos", "lacteos"};
+    int q[] = {10, 5, 20, 8, 6, 10, 3, 0, 5, 10, 5, 8};
+    float p[] = {1.5, 1.2, 0.8, 1.3, 1.2, 0.5, 2.5, 1.8, 1.0, 1.2, 2.0, 1.5};
 
     totalProductos = 12;
+    for (int i = 0; i < totalProductos; i++)
+    {
+        nombres[i] = n[i];
+        clasificaciones[i] = c[i];
+        cantidades[i] = q[i];
+        precios[i] = p[i];
+    }
 }
 
 void registrarProducto()
@@ -179,7 +122,11 @@ void registrarProducto()
         return;
     }
 
-    string nombre = leerTexto("Ingrese el nombre del producto: ");
+    string nombre;
+    string clasificacion;
+
+    cout << "Ingrese el nombre del producto: ";
+    getline(cin >> ws, nombre);
 
     if (buscarProducto(nombre) != -1)
     {
@@ -187,7 +134,8 @@ void registrarProducto()
         return;
     }
 
-    string clasificacion = leerTexto("Ingrese la clasificacion del producto: ");
+    cout << "Ingrese la clasificacion del producto: ";
+    getline(cin >> ws, clasificacion);
     int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0);
     float precio = leerPrecio("Ingrese el precio del producto: ");
 
@@ -214,7 +162,6 @@ string estadoStock(int cantidad)
     return "Disponible";
 }
 
-// Imprime el encabezado de la tabla de productos
 void imprimirEncabezado()
 {
     cout << left << setw(5) << "No."
@@ -226,7 +173,6 @@ void imprimirEncabezado()
     cout << string(62, '-') << endl;
 }
 
-// Imprime una fila de la tabla con el producto en la posicion i
 void imprimirFila(int i)
 {
     cout << fixed << setprecision(2);
@@ -253,83 +199,31 @@ void listarInventario()
     }
 }
 
-// Busca productos cuyo nombre contenga el texto ingresado (sin importar mayusculas)
 void buscarPorNombre()
 {
-    if (totalProductos == 0)
+    string nombre;
+    cout << "Ingrese el nombre del producto a buscar: ";
+    getline(cin >> ws, nombre);
+
+    int pos = buscarProducto(nombre);
+    if (pos == -1)
     {
-        cout << "El inventario esta vacio." << endl;
+        cout << "Producto no encontrado." << endl;
         return;
     }
 
-    string texto = aMinusculas(leerTexto("Ingrese el nombre (o parte del nombre) a buscar: "));
-    int encontrados = 0;
-
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (aMinusculas(nombres[i]).find(texto) != string::npos)
-        {
-            if (encontrados == 0)
-            {
-                imprimirEncabezado();
-            }
-            imprimirFila(i);
-            encontrados++;
-        }
-    }
-
-    if (encontrados == 0)
-    {
-        cout << "No se encontraron productos con ese nombre." << endl;
-    }
-    else
-    {
-        cout << "\nProductos encontrados: " << encontrados << endl;
-    }
+    imprimirEncabezado();
+    imprimirFila(pos);
 }
 
-// Muestra las clasificaciones distintas que existen en el inventario
-void mostrarClasificaciones()
-{
-    cout << "Clasificaciones disponibles: ";
-    int mostradas = 0;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        bool repetida = false;
-        for (int j = 0; j < i; j++)
-        {
-            if (aMinusculas(clasificaciones[j]) == aMinusculas(clasificaciones[i]))
-            {
-                repetida = true;
-                break;
-            }
-        }
-        if (!repetida)
-        {
-            if (mostradas > 0)
-            {
-                cout << ", ";
-            }
-            cout << clasificaciones[i];
-            mostradas++;
-        }
-    }
-    cout << endl;
-}
-
-// Lista solo los productos de una clasificacion (sin importar mayusculas)
 void filtrarPorClasificacion()
 {
-    if (totalProductos == 0)
-    {
-        cout << "El inventario esta vacio." << endl;
-        return;
-    }
+    string clasificacion;
+    cout << "Ingrese la clasificacion a mostrar: ";
+    getline(cin >> ws, clasificacion);
+    clasificacion = aMinusculas(clasificacion);
 
-    mostrarClasificaciones();
-    string clasificacion = aMinusculas(leerTexto("Ingrese la clasificacion a mostrar: "));
     int encontrados = 0;
-
     for (int i = 0; i < totalProductos; i++)
     {
         if (aMinusculas(clasificaciones[i]) == clasificacion)
@@ -346,10 +240,6 @@ void filtrarPorClasificacion()
     if (encontrados == 0)
     {
         cout << "No hay productos en esa clasificacion." << endl;
-    }
-    else
-    {
-        cout << "\nProductos en la clasificacion: " << encontrados << endl;
     }
 }
 
