@@ -200,6 +200,20 @@ void registrarProducto()
     cout << "Producto registrado correctamente." << endl;
 }
 
+// Devuelve el estado del stock segun la cantidad
+string estadoStock(int cantidad)
+{
+    if (cantidad == 0)
+    {
+        return "AGOTADO";
+    }
+    if (cantidad <= 5)
+    {
+        return "Stock bajo";
+    }
+    return "Disponible";
+}
+
 void listarInventario()
 {
     if (totalProductos == 0)
@@ -224,21 +238,56 @@ void listarInventario()
              << setw(14) << nombres[i]
              << setw(16) << clasificaciones[i]
              << setw(10) << cantidades[i]
-             << setw(10) << precios[i];
+             << setw(10) << precios[i]
+             << estadoStock(cantidades[i]) << endl;
+    }
+}
 
-        if (cantidades[i] == 0)
+// Busca productos cuyo nombre contenga el texto ingresado (sin importar mayusculas)
+void buscarPorNombre()
+{
+    if (totalProductos == 0)
+    {
+        cout << "El inventario esta vacio." << endl;
+        return;
+    }
+
+    string texto = aMinusculas(leerTexto("Ingrese el nombre (o parte del nombre) a buscar: "));
+    int encontrados = 0;
+
+    for (int i = 0; i < totalProductos; i++)
+    {
+        if (aMinusculas(nombres[i]).find(texto) != string::npos)
         {
-            cout << "AGOTADO";
+            if (encontrados == 0)
+            {
+                cout << left << setw(5) << "No."
+                     << setw(14) << "Nombre"
+                     << setw(16) << "Clasificacion"
+                     << setw(10) << "Cantidad"
+                     << setw(10) << "Precio"
+                     << "Estado" << endl;
+                cout << string(62, '-') << endl;
+                cout << fixed << setprecision(2);
+            }
+
+            cout << left << setw(5) << (i + 1)
+                 << setw(14) << nombres[i]
+                 << setw(16) << clasificaciones[i]
+                 << setw(10) << cantidades[i]
+                 << setw(10) << precios[i]
+                 << estadoStock(cantidades[i]) << endl;
+            encontrados++;
         }
-        else if (cantidades[i] <= 5)
-        {
-            cout << "Stock bajo";
-        }
-        else
-        {
-            cout << "Disponible";
-        }
-        cout << endl;
+    }
+
+    if (encontrados == 0)
+    {
+        cout << "No se encontraron productos con ese nombre." << endl;
+    }
+    else
+    {
+        cout << "\nProductos encontrados: " << encontrados << endl;
     }
 }
 
@@ -253,6 +302,7 @@ int main()
         cout << "\n===== TIENDA JNB (prueba) =====" << endl;
         cout << "1. Registrar producto" << endl;
         cout << "2. Listar inventario" << endl;
+        cout << "3. Buscar producto por nombre" << endl;
         cout << "0. Salir" << endl;
         opcion = leerEntero("Opcion: ", 0);
 
@@ -263,6 +313,9 @@ int main()
             break;
         case 2:
             listarInventario();
+            break;
+        case 3:
+            buscarPorNombre();
             break;
         case 0:
             cout << "Saliendo..." << endl;
