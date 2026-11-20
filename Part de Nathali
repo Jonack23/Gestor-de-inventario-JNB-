@@ -1,4 +1,0 @@
-cout << "OPCIONES" << endl;
-    cout << "1. Ayuda" << endl;
-    cout << "2. Integrantes" << endl;
-    cin >> opcion;
