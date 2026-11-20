@@ -118,21 +118,27 @@ void cargarInventarioInicial()
 
 void registrarProducto()
 {
-    if (totalProductos >= MAX)
-    {
-        cout << "Inventario lleno. No se pueden agregar mas productos." << endl;
-        return;
-    }
-
     string nombre;
     string clasificacion;
 
     cout << "Ingrese el nombre del producto: ";
     getline(cin >> ws, nombre);
 
-    if (buscarProducto(nombre) != -1)
+    // Si ya existe, se suma al stock en lugar de rechazarlo
+    int pos = buscarProducto(nombre);
+    if (pos != -1)
     {
-        cout << "Ese producto ya existe en el inventario." << endl;
+        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1);
+        cantidades[pos] += extra;
+        cout << "Stock actualizado. " << nombres[pos] << " ahora tiene "
+             << cantidades[pos] << " unidades." << endl;
+        return;
+    }
+
+    // Producto nuevo: se verifica espacio antes de pedir mas datos
+    if (totalProductos >= MAX)
+    {
+        cout << "Inventario lleno. No se pueden agregar mas productos." << endl;
         return;
     }
 
