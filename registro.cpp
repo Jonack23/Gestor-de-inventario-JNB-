@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cctype>
 using namespace std;
 
 const int MAX = 100;
+const int STOCK_CRITICO = 5; // menos de este valor = stock critico (compartido con reportes)
 
 string nombres[MAX];
 string clasificaciones[MAX];
@@ -155,7 +157,7 @@ string estadoStock(int cantidad)
     {
         return "AGOTADO";
     }
-    if (cantidad <= 5)
+    if (cantidad < STOCK_CRITICO)
     {
         return "Stock bajo";
     }
