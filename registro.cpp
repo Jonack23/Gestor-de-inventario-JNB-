@@ -132,7 +132,13 @@ void registrarProducto()
     int pos = buscarProducto(nombre);
     if (pos != -1)
     {
-        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1, MAX_CANTIDAD);
+        int maximoExtra = MAX_CANTIDAD - cantidades[pos];
+        if (maximoExtra < 1)
+        {
+            cout << "Ese producto ya tiene el stock maximo (" << MAX_CANTIDAD << ")." << endl;
+            return;
+        }
+        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1, maximoExtra);
         cantidades[pos] += extra;
         cout << "Stock actualizado. " << nombres[pos] << " ahora tiene "
              << cantidades[pos] << " unidades." << endl;
