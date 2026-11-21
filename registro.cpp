@@ -41,7 +41,28 @@ string aMinusculas(string texto)
     return texto;
 }
 
-// Busca un producto por nombre. Devuelve su posicion o -1 si no existe
+// Devuelve true si "parte" aparece dentro de "texto" (comparando letra por letra)
+bool contiene(string texto, string parte)
+{
+    for (int i = 0; i + (int)parte.length() <= (int)texto.length(); i++)
+    {
+        bool coincide = true;
+        for (int j = 0; j < (int)parte.length(); j++)
+        {
+            if (texto[i + j] != parte[j])
+            {
+                coincide = false;
+            }
+        }
+        if (coincide)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Busca un producto por nombre exacto. Devuelve su posicion o -1 si no existe
 int buscarProducto(string nombre)
 {
     string buscado = aMinusculas(nombre);
@@ -217,21 +238,32 @@ void listarInventario()
     }
 }
 
+// Busca productos cuyo nombre contenga el texto ingresado (puede haber varios)
 void buscarPorNombre()
 {
-    string nombre;
-    cout << "Ingrese el nombre del producto a buscar: ";
-    getline(cin >> ws, nombre);
+    string texto;
+    cout << "Ingrese el nombre (o parte del nombre) a buscar: ";
+    getline(cin >> ws, texto);
+    texto = aMinusculas(texto);
 
-    int pos = buscarProducto(nombre);
-    if (pos == -1)
+    int encontrados = 0;
+    for (int i = 0; i < totalProductos; i++)
     {
-        cout << "Producto no encontrado." << endl;
-        return;
+        if (contiene(aMinusculas(nombres[i]), texto))
+        {
+            if (encontrados == 0)
+            {
+                imprimirEncabezado();
+            }
+            imprimirFila(i);
+            encontrados++;
+        }
     }
 
-    imprimirEncabezado();
-    imprimirFila(pos);
+    if (encontrados == 0)
+    {
+        cout << "Producto no encontrado." << endl;
+    }
 }
 
 void filtrarPorClasificacion()
