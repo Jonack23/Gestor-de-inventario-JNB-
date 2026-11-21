@@ -206,19 +206,19 @@ string estadoStock(int cantidad)
 void imprimirEncabezado()
 {
     cout << left << setw(5) << "No."
-         << setw(14) << "Nombre"
+         << setw(20) << "Nombre"
          << setw(16) << "Clasificacion"
          << setw(10) << "Cantidad"
          << setw(10) << "Precio"
          << "Estado" << endl;
-    cout << string(62, '-') << endl;
+    cout << string(71, '-') << endl;
 }
 
 void imprimirFila(int i)
 {
     cout << fixed << setprecision(2);
     cout << left << setw(5) << (i + 1)
-         << setw(14) << nombres[i]
+         << setw(20) << nombres[i]
          << setw(16) << clasificaciones[i]
          << setw(10) << cantidades[i]
          << setw(10) << precios[i]
