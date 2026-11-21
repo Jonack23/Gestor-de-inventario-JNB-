@@ -6,6 +6,8 @@ using namespace std;
 
 const int MAX = 100;
 const int STOCK_CRITICO = 5; // menos de este valor = stock critico (compartido con reportes)
+const int MAX_CANTIDAD = 1000;
+const float MAX_PRECIO = 500;
 
 string nombres[MAX];
 string clasificaciones[MAX];
@@ -53,8 +55,8 @@ int buscarProducto(string nombre)
     return -1;
 }
 
-// Pide un entero >= minimo. Repite con do-while hasta que el dato sea valido
-int leerEntero(string mensaje, int minimo)
+// Pide un entero entre minimo y maximo. Repite con do-while hasta que el dato sea valido
+int leerEntero(string mensaje, int minimo, int maximo)
 {
     int valor;
     bool valido;
@@ -62,10 +64,11 @@ int leerEntero(string mensaje, int minimo)
     {
         cout << mensaje;
         cin >> valor;
-        valido = !cin.fail() && valor >= minimo;
+        valido = !cin.fail() && valor >= minimo && valor <= maximo;
         if (!valido)
         {
-            cout << "Dato invalido. Ingrese un numero entero mayor o igual a " << minimo << "." << endl;
+            cout << "Dato invalido. Ingrese un numero entero entre " << minimo
+                 << " y " << maximo << "." << endl;
             cin.clear();            // quita el error de cin (por si escribieron letras)
             cin.ignore(1000, '\n'); // descarta lo que quedo escrito en la linea
         }
@@ -74,7 +77,7 @@ int leerEntero(string mensaje, int minimo)
     return valor;
 }
 
-// Pide un precio > 0. Repite con do-while hasta que el dato sea valido
+// Pide un precio entre 0 (sin incluir) y MAX_PRECIO. Repite con do-while hasta que sea valido
 float leerPrecio(string mensaje)
 {
     float valor;
@@ -83,10 +86,11 @@ float leerPrecio(string mensaje)
     {
         cout << mensaje;
         cin >> valor;
-        valido = !cin.fail() && valor > 0;
+        valido = !cin.fail() && valor > 0 && valor <= MAX_PRECIO;
         if (!valido)
         {
-            cout << "Dato invalido. Ingrese un precio mayor que 0." << endl;
+            cout << "Dato invalido. Ingrese un precio mayor que 0 y menor o igual a "
+                 << MAX_PRECIO << "." << endl;
             cin.clear();
             cin.ignore(1000, '\n');
         }
@@ -128,7 +132,7 @@ void registrarProducto()
     int pos = buscarProducto(nombre);
     if (pos != -1)
     {
-        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1);
+        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1, MAX_CANTIDAD);
         cantidades[pos] += extra;
         cout << "Stock actualizado. " << nombres[pos] << " ahora tiene "
              << cantidades[pos] << " unidades." << endl;
@@ -144,7 +148,7 @@ void registrarProducto()
 
     cout << "Ingrese la clasificacion del producto: ";
     getline(cin >> ws, clasificacion);
-    int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0);
+    int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0, MAX_CANTIDAD);
     float precio = leerPrecio("Ingrese el precio del producto: ");
 
     nombres[totalProductos] = nombre;
@@ -265,7 +269,7 @@ int main()
         cout << "3. Buscar producto por nombre" << endl;
         cout << "4. Filtrar por clasificacion" << endl;
         cout << "0. Salir" << endl;
-        opcion = leerEntero("Opcion: ", 0);
+        opcion = leerEntero("Opcion: ", 0, 4);
 
         switch (opcion)
         {
@@ -284,8 +288,6 @@ int main()
         case 0:
             cout << "Saliendo..." << endl;
             break;
-        default:
-            cout << "Opcion no valida." << endl;
         }
     } while (opcion != 0);
 
