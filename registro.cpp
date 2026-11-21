@@ -148,6 +148,7 @@ void registrarProducto()
 
     cout << "Ingrese el nombre del producto: ";
     getline(cin >> ws, nombre);
+    nombre = aMinusculas(nombre); // se guarda en minuscula para que la tabla quede uniforme
 
     // Si ya existe, se suma al stock en lugar de rechazarlo
     int pos = buscarProducto(nombre);
@@ -175,6 +176,7 @@ void registrarProducto()
 
     cout << "Ingrese la clasificacion del producto: ";
     getline(cin >> ws, clasificacion);
+    clasificacion = aMinusculas(clasificacion);
     int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0, MAX_CANTIDAD);
     float precio = leerPrecio("Ingrese el precio del producto: ");
 
