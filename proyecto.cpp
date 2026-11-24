@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
-
 void realizarVenta() {
     float totalCliente = 0;
     int seguirComprando = 1;
