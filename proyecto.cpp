@@ -1,6 +1,54 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
+
+struct Producto {
+    string nombre;
+    string clasificacion;
+    int cantidad = 0;
+    float precio = 0.0;
+    int vendidos = 0;
+};
+
+Producto inventario[14];
+int totalProductos = 0;
+
+float totalCaja = 0;
+int totalVentas = 0;
+
+void realizarVenta();
+void generarReporte();
+
+int main() {
+    inventario[0] = {"coca_cola", "bebida", 10, 1.50, 0};
+    inventario[1] = {"lejia", "limpieza", 0, 1.80, 0};
+    inventario[2] = {"detergente", "limpieza", 3, 2.50, 0};
+    totalProductos = 3;
+
+    int op;
+    do {
+        cout << endl;
+        cout << "--- PRUEBA VENTAS (JONATHAN) ---" << endl;
+        cout << "1. Realizar venta  2. Generar reporte  0. Salir: ";
+        cin >> op;
+        while (cin.fail() || op < 0 || op > 2) {
+            if (cin.fail()) {
+                cin.clear();
+                string limpiar;
+                cin >> limpiar;
+            }
+            cout << "Opcion no valida (0 a 2): ";
+            cin >> op;
+        }
+        switch (op) {
+            case 1: realizarVenta(); break;
+            case 2: generarReporte(); break;
+        }
+    } while (op != 0);
+    return 0;
+}
+
 void realizarVenta() {
     float totalCliente = 0;
     int seguirComprando = 1;
@@ -24,7 +72,6 @@ void realizarVenta() {
         if (pos == -1) {
             cout << "Producto no encontrado." << endl;
         } else {
-            // Si el producto esta agotado, pregunta si desea agregar mas unidades
             if (inventario[pos].cantidad == 0) {
                 cout << "Este producto esta AGOTADO." << endl;
                 int agregarMas;
@@ -58,7 +105,6 @@ void realizarVenta() {
                 }
             }
 
-            // Si ya tiene disponibilidad, procede a vender
             if (inventario[pos].cantidad > 0) {
                 cout << "Producto: " << inventario[pos].nombre
                      << " | Precio: $" << inventario[pos].precio
