@@ -1,333 +1,232 @@
 #include <iostream>
 #include <string>
-#include <iomanip>
-#include <cctype>
+
 using namespace std;
 
-const int MAX = 100;
-const int STOCK_CRITICO = 5; // menos de este valor = stock critico (compartido con reportes)
-const int MAX_CANTIDAD = 1000;
-const float MAX_PRECIO = 500;
-
-string nombres[MAX];
-string clasificaciones[MAX];
-int cantidades[MAX];
-float precios[MAX];
-int totalProductos = 0;
-
-// nombre | clasificacion | cantidad | precio
-// coca cola | bebida | 10 | 1.5
-// pepsi | bebida | 5 | 1.2
-// agua | bebida | 20 | 0.8
-// lays | snack | 8 | 1.3
-// m&m's | snack | 6 | 1.2
-// gomitas | snack | 10 | 0.5
-// detergente | limpieza | 3 | 2.5
-// lejia | limpieza | 0 | 1.8
-// jabon | limpieza | 5 | 1.0
-// leche | lacteos | 10 | 1.2
-// queso | lacteos | 5 | 2.0
-// yogurt | lacteos | 8 | 1.5
-
-// ---------- Funciones auxiliares ----------
-
-// Convierte un texto a minusculas (para comparar nombres sin importar mayusculas)
-string aMinusculas(string texto)
-{
-    for (int i = 0; i < (int)texto.length(); i++)
-    {
-        texto[i] = tolower((unsigned char)texto[i]);
-    }
-    return texto;
-}
-
-// Devuelve true si "parte" aparece dentro de "texto" (comparando letra por letra)
-bool contiene(string texto, string parte)
-{
-    for (int i = 0; i + (int)parte.length() <= (int)texto.length(); i++)
-    {
-        bool coincide = true;
-        for (int j = 0; j < (int)parte.length(); j++)
-        {
-            if (texto[i + j] != parte[j])
-            {
-                coincide = false;
-            }
-        }
-        if (coincide)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-// Busca un producto por nombre exacto. Devuelve su posicion o -1 si no existe
-int buscarProducto(string nombre)
-{
-    string buscado = aMinusculas(nombre);
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (aMinusculas(nombres[i]) == buscado)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-// Pide un entero entre minimo y maximo. Repite con do-while hasta que el dato sea valido
-int leerEntero(string mensaje, int minimo, int maximo)
-{
-    int valor;
-    bool valido;
-    do
-    {
-        cout << mensaje;
-        cin >> valor;
-        valido = !cin.fail() && valor >= minimo && valor <= maximo;
-        if (!valido)
-        {
-            cout << "Dato invalido. Ingrese un numero entero entre " << minimo
-                 << " y " << maximo << "." << endl;
-            cin.clear();            // quita el error de cin (por si escribieron letras)
-            cin.ignore(1000, '\n'); // descarta lo que quedo escrito en la linea
-        }
-    } while (!valido);
-    cin.ignore(1000, '\n');
-    return valor;
-}
-
-// Pide un precio entre 0 (sin incluir) y MAX_PRECIO. Repite con do-while hasta que sea valido
-float leerPrecio(string mensaje)
-{
-    float valor;
-    bool valido;
-    do
-    {
-        cout << mensaje;
-        cin >> valor;
-        valido = !cin.fail() && valor > 0 && valor <= MAX_PRECIO;
-        if (!valido)
-        {
-            cout << "Dato invalido. Ingrese un precio mayor que 0 y menor o igual a "
-                 << MAX_PRECIO << "." << endl;
-            cin.clear();
-            cin.ignore(1000, '\n');
-        }
-    } while (!valido);
-    cin.ignore(1000, '\n');
-    return valor;
-}
-
-// ---------- Funciones principales ----------
-
-void cargarInventarioInicial()
-{
-    string n[] = {"coca cola", "pepsi", "agua", "lays", "m&m's", "gomitas",
-                  "detergente", "lejia", "jabon", "leche", "queso", "yogurt"};
-    string c[] = {"bebida", "bebida", "bebida", "snack", "snack", "snack",
-                  "limpieza", "limpieza", "limpieza", "lacteos", "lacteos", "lacteos"};
-    int q[] = {10, 5, 20, 8, 6, 10, 3, 0, 5, 10, 5, 8};
-    float p[] = {1.5, 1.2, 0.8, 1.3, 1.2, 0.5, 2.5, 1.8, 1.0, 1.2, 2.0, 1.5};
-
-    totalProductos = 12;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        nombres[i] = n[i];
-        clasificaciones[i] = c[i];
-        cantidades[i] = q[i];
-        precios[i] = p[i];
-    }
-}
-
-void registrarProducto()
-{
+struct Producto {
     string nombre;
     string clasificacion;
+    int cantidad = 0;
+    float precio = 0.0;
+    int vendidos = 0;
+};
 
-    cout << "Ingrese el nombre del producto: ";
-    getline(cin >> ws, nombre);
-    nombre = aMinusculas(nombre); // se guarda en minuscula para que la tabla quede uniforme
+Producto inventario[14];
+int totalProductos = 0;
 
-    // Si ya existe, se suma al stock en lugar de rechazarlo
-    int pos = buscarProducto(nombre);
-    if (pos != -1)
-    {
-        int maximoExtra = MAX_CANTIDAD - cantidades[pos];
-        if (maximoExtra < 1)
-        {
-            cout << "Ese producto ya tiene el stock maximo (" << MAX_CANTIDAD << ")." << endl;
+void cargarInventarioInicial() {
+    inventario[0]  = {"coca_cola",  "bebida",   10, 1.50, 0};
+    inventario[1]  = {"pepsi",      "bebida",    5, 1.20, 0};
+    inventario[2]  = {"agua",       "bebida",   20, 0.80, 0};
+    inventario[3]  = {"lays",       "snack",     8, 1.30, 0};
+    inventario[4]  = {"m&m's",      "snack",     6, 1.20, 0};
+    inventario[5]  = {"gomitas",    "snack",    10, 0.50, 0};
+    inventario[6]  = {"detergente", "limpieza",  3, 2.50, 0};
+    inventario[7]  = {"lejia",      "limpieza",  0, 1.80, 0};
+    inventario[8]  = {"jabon",      "limpieza",  5, 1.00, 0};
+    inventario[9]  = {"leche",      "lacteos",  10, 1.20, 0};
+    inventario[10] = {"queso",      "lacteos",   5, 2.00, 0};
+    inventario[11] = {"yogurt",     "lacteos",   8, 1.50, 0};
+
+    totalProductos = 12;
+}
+
+void registrarProducto() {
+    if (totalProductos >= 14) {
+        cout << "El inventario esta lleno." << endl;
+        return;
+    }
+
+    Producto nuevo;
+    cout << endl;
+    cout << "--- REGISTRAR PRODUCTO ---" << endl;
+    cout << "Nombre del producto (sin espacios): ";
+    cin >> nuevo.nombre;
+
+    for (int i = 0; i < totalProductos; i++) {
+        if (inventario[i].nombre == nuevo.nombre) {
+            int extra;
+            cout << "El producto ya existe. Cantidad a sumar: ";
+            cin >> extra;
+            while (cin.fail() || extra < 1) {
+                if (cin.fail()) {
+                    cin.clear();
+                    string limpiar;
+                    cin >> limpiar;
+                }
+                cout << "Dato invalido. Ingrese un numero mayor a 0: ";
+                cin >> extra;
+            }
+            inventario[i].cantidad = inventario[i].cantidad + extra;
+            cout << "Stock actualizado! Ahora hay " << inventario[i].cantidad << " unidades." << endl;
             return;
         }
-        int extra = leerEntero("El producto ya existe. Cantidad a sumar: ", 1, maximoExtra);
-        cantidades[pos] += extra;
-        cout << "Stock actualizado. " << nombres[pos] << " ahora tiene "
-             << cantidades[pos] << " unidades." << endl;
-        return;
     }
 
-    // Producto nuevo: se verifica espacio antes de pedir mas datos
-    if (totalProductos >= MAX)
-    {
-        cout << "Inventario lleno. No se pueden agregar mas productos." << endl;
-        return;
+    cout << "Clasificacion (bebida, snack, limpieza, lacteos): ";
+    cin >> nuevo.clasificacion;
+
+    cout << "Cantidad: ";
+    cin >> nuevo.cantidad;
+    while (cin.fail() || nuevo.cantidad < 0) {
+        if (cin.fail()) {
+            cin.clear();
+            string limpiar;
+            cin >> limpiar;
+        }
+        cout << "Cantidad invalida. Ingrese un numero (0 o mas): ";
+        cin >> nuevo.cantidad;
     }
 
-    cout << "Ingrese la clasificacion del producto: ";
-    getline(cin >> ws, clasificacion);
-    clasificacion = aMinusculas(clasificacion);
-    int cantidad = leerEntero("Ingrese la cantidad del producto: ", 0, MAX_CANTIDAD);
-    float precio = leerPrecio("Ingrese el precio del producto: ");
+    cout << "Precio: $";
+    cin >> nuevo.precio;
+    while (cin.fail() || nuevo.precio <= 0) {
+        if (cin.fail()) {
+            cin.clear();
+            string limpiar;
+            cin >> limpiar;
+        }
+        cout << "Precio invalido. Ingrese un numero mayor a 0: $";
+        cin >> nuevo.precio;
+    }
 
-    nombres[totalProductos] = nombre;
-    clasificaciones[totalProductos] = clasificacion;
-    cantidades[totalProductos] = cantidad;
-    precios[totalProductos] = precio;
-
+    nuevo.vendidos = 0;
+    inventario[totalProductos] = nuevo;
     totalProductos++;
-    cout << "Producto registrado correctamente." << endl;
+
+    cout << "Producto registrado con exito!" << endl;
 }
 
-// Devuelve el estado del stock segun la cantidad
-string estadoStock(int cantidad)
-{
-    if (cantidad == 0)
-    {
-        return "AGOTADO";
-    }
-    if (cantidad < STOCK_CRITICO)
-    {
-        return "Stock bajo";
-    }
-    return "Disponible";
-}
-
-void imprimirEncabezado()
-{
-    cout << left << setw(5) << "No."
-         << setw(20) << "Nombre"
-         << setw(16) << "Clasificacion"
-         << setw(10) << "Cantidad"
-         << setw(10) << "Precio"
-         << "Estado" << endl;
-    cout << string(71, '-') << endl;
-}
-
-void imprimirFila(int i)
-{
-    cout << fixed << setprecision(2);
-    cout << left << setw(5) << (i + 1)
-         << setw(20) << nombres[i]
-         << setw(16) << clasificaciones[i]
-         << setw(10) << cantidades[i]
-         << setw(10) << precios[i]
-         << estadoStock(cantidades[i]) << endl;
-}
-
-void listarInventario()
-{
-    if (totalProductos == 0)
-    {
-        cout << "El inventario esta vacio." << endl;
-        return;
+void imprimirFilaProducto(int i) {
+    if (i + 1 < 10) {
+        cout << (i + 1) << "    ";
+    } else {
+        cout << (i + 1) << "   ";
     }
 
-    imprimirEncabezado();
-    for (int i = 0; i < totalProductos; i++)
-    {
-        imprimirFila(i);
+    cout << inventario[i].nombre;
+    for (int s = inventario[i].nombre.length(); s < 15; s++) {
+        cout << " ";
     }
+
+    cout << inventario[i].clasificacion;
+    for (int s = inventario[i].clasificacion.length(); s < 13; s++) {
+        cout << " ";
+    }
+
+    if (inventario[i].cantidad < 10) {
+        cout << inventario[i].cantidad << "       ";
+    } else {
+        cout << inventario[i].cantidad << "      ";
+    }
+
+    cout << "$" << inventario[i].precio << "     ";
+
+    if (inventario[i].cantidad == 0) {
+        cout << "AGOTADO";
+    } else if (inventario[i].cantidad <= 5) {
+        cout << "Stock bajo";
+    } else {
+        cout << "Disponible";
+    }
+    cout << endl;
 }
 
-// Busca productos cuyo nombre contenga el texto ingresado (puede haber varios)
-void buscarPorNombre()
-{
-    string texto;
-    cout << "Ingrese el nombre (o parte del nombre) a buscar: ";
-    getline(cin >> ws, texto);
-    texto = aMinusculas(texto);
+void listarInventario() {
+    cout << endl;
+    cout << "=================================================================" << endl;
+    cout << "                   INVENTARIO DE TIENDA JNB                      " << endl;
+    cout << "=================================================================" << endl;
+    cout << "No.  Producto       Categoria    Stock   Precio   Estado" << endl;
+    cout << "-----------------------------------------------------------------" << endl;
 
-    int encontrados = 0;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (contiene(aMinusculas(nombres[i]), texto))
-        {
-            if (encontrados == 0)
-            {
-                imprimirEncabezado();
-            }
-            imprimirFila(i);
-            encontrados++;
+    for (int i = 0; i < totalProductos; i++) {
+        imprimirFilaProducto(i);
+    }
+    cout << "=================================================================" << endl;
+}
+
+void buscarPorNombre() {
+    string buscado;
+    cout << endl;
+    cout << "Ingrese el nombre del producto a buscar: ";
+    cin >> buscado;
+
+    int encontrado = 0;
+    for (int i = 0; i < totalProductos; i++) {
+        if (inventario[i].nombre == buscado) {
+            cout << endl;
+            cout << "-----------------------------------------------------------------" << endl;
+            cout << "No.  Producto       Categoria    Stock   Precio   Estado" << endl;
+            cout << "-----------------------------------------------------------------" << endl;
+            imprimirFilaProducto(i);
+            cout << "-----------------------------------------------------------------" << endl;
+            encontrado = 1;
         }
     }
 
-    if (encontrados == 0)
-    {
+    if (encontrado == 0) {
         cout << "Producto no encontrado." << endl;
     }
 }
 
-void filtrarPorClasificacion()
-{
-    string clasificacion;
+void filtrarPorClasificacion() {
+    string categoria;
+    cout << endl;
     cout << "Ingrese la clasificacion a mostrar: ";
-    getline(cin >> ws, clasificacion);
-    clasificacion = aMinusculas(clasificacion);
+    cin >> categoria;
 
     int encontrados = 0;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (aMinusculas(clasificaciones[i]) == clasificacion)
-        {
-            if (encontrados == 0)
-            {
-                imprimirEncabezado();
-            }
-            imprimirFila(i);
+    cout << endl;
+    cout << "=================================================================" << endl;
+    cout << " CATEGORIA: " << categoria << endl;
+    cout << "=================================================================" << endl;
+    cout << "No.  Producto       Categoria    Stock   Precio   Estado" << endl;
+    cout << "-----------------------------------------------------------------" << endl;
+
+    for (int i = 0; i < totalProductos; i++) {
+        if (inventario[i].clasificacion == categoria) {
+            imprimirFilaProducto(i);
             encontrados++;
         }
     }
 
-    if (encontrados == 0)
-    {
+    if (encontrados == 0) {
         cout << "No hay productos en esa clasificacion." << endl;
     }
+    cout << "=================================================================" << endl;
 }
 
-// Menu temporal para probar tus funciones (luego se integra con el menu de Nathali)
-int main()
-{
+// Menu minimo solo para probar las funciones de inventario.
+int main() {
     cargarInventarioInicial();
 
     int opcion;
-    do
-    {
-        cout << "\n===== TIENDA JNB (prueba) =====" << endl;
+    do {
+        cout << endl;
         cout << "1. Registrar producto" << endl;
         cout << "2. Listar inventario" << endl;
         cout << "3. Buscar producto por nombre" << endl;
         cout << "4. Filtrar por clasificacion" << endl;
         cout << "0. Salir" << endl;
-        opcion = leerEntero("Opcion: ", 0, 4);
+        cout << "Opcion: ";
+        cin >> opcion;
 
-        switch (opcion)
-        {
-        case 1:
-            registrarProducto();
-            break;
-        case 2:
-            listarInventario();
-            break;
-        case 3:
-            buscarPorNombre();
-            break;
-        case 4:
-            filtrarPorClasificacion();
-            break;
-        case 0:
-            cout << "Saliendo..." << endl;
-            break;
+        while (cin.fail() || opcion < 0 || opcion > 4) {
+            if (cin.fail()) {
+                cin.clear();
+                string limpiar;
+                cin >> limpiar;
+            }
+            cout << "Opcion no valida. Escriba un numero de las opciones mostradas: ";
+            cin >> opcion;
+        }
+
+        switch (opcion) {
+            case 1: registrarProducto(); break;
+            case 2: listarInventario(); break;
+            case 3: buscarPorNombre(); break;
+            case 4: filtrarPorClasificacion(); break;
         }
     } while (opcion != 0);
 
