@@ -21,4 +21,4 @@ g++ ventas.cpp -o ventas
 3. Escribe la cantidad y sigue las instrucciones en pantalla.
 
 ## Nota
-Si el producto está agotado, el sistema permite agregar más unidades.
+Si el producto está agotado, el sistema permite agregar más unidades..
