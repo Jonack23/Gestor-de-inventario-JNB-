@@ -1,127 +1,219 @@
-// sistema de ventas
+#include <iostream>
+#include <string>
 
-float totalRecaudado = 0.0;
+using namespace std;
+
+// =========================================================================
+// ESTRUCTURAS Y ARREGLOS GLOBALES COMPARTIDOS
+// =========================================================================
+
+struct Producto {
+    string nombre;
+    string clasificacion;
+    int cantidad = 0;
+    float precio = 0.0;
+    int vendidos = 0;
+};
+
+Producto inventario[14];
+int totalProductos = 0;
+
+// Variables para el control de ventas
+float totalCaja = 0;
 int totalVentas = 0;
-int unidadesVendidas[MAX] = {0};
 
-void realizarVenta()
-{
-    if (totalProductos == 0)
-    {
-        cout << "No hay productos registrados para vender." << endl;
-        return;
-    }
+// Prototipos Integrante 3 (Jonathan)
+void realizarVenta();
+void generarReporte();
 
-    float totalCompraActual = 0.0;
+// =========================================================================
+// MAIN DE PRUEBA (SE BORRA AL UNIR CON LA RAMA DE NATHALI)
+// =========================================================================
+int main() {
+    cout << fixed;
+    cout.precision(2);
+
+    inventario[0] = {"coca_cola", "bebida", 10, 1.50, 0};
+    inventario[1] = {"lejia", "limpieza", 0, 1.80, 0};
+    inventario[2] = {"detergente", "limpieza", 3, 2.50, 0};
+    totalProductos = 3;
+
+    int op;
+    do {
+        cout << endl;
+        cout << "--- PRUEBA VENTAS (JONATHAN) ---" << endl;
+        cout << "1. Realizar venta  2. Generar reporte  0. Salir: ";
+        cin >> op;
+        while (cin.fail() || op < 0 || op > 2) {
+            if (cin.fail()) {
+                cin.clear();
+                string limpiar;
+                cin >> limpiar;
+            }
+            cout << "Opcion no valida (0 a 2): ";
+            cin >> op;
+        }
+        switch (op) {
+            case 1: realizarVenta(); break;
+            case 2: generarReporte(); break;
+        }
+    } while (op != 0);
+    return 0;
+}
+
+// =========================================================================
+// MODULO INTEGRANTE 3 (JONATHAN): VENTAS Y REPORTES
+// =========================================================================
+
+void realizarVenta() {
+    float totalCliente = 0;
     int seguirComprando = 1;
-    bool seVendioAlgo = false;
+    int seVendioAlgo = 0;
 
-    cout << "\n--- NUEVA VENTA ---" << endl;
+    cout << endl;
+    cout << "--- NUEVA VENTA ---" << endl;
 
-    do
-    {
-        string nombre;
+    do {
+        string nombreProd;
         cout << "Ingrese el nombre del producto a vender: ";
-        getline(cin >> ws, nombre);
+        cin >> nombreProd;
 
-        int pos = buscarProducto(nombre);
-
-        if (pos == -1)
-        {
-            cout << "Producto no encontrado en el inventario." << endl;
-        }
-        else if (cantidades[pos] == 0)
-        {
-            cout << "El producto '" << nombres[pos] << "' esta AGOTADO." << endl;
-        }
-        else
-        {
-            cout << fixed << setprecision(2);
-            cout << "Producto: " << nombres[pos]
-                 << " | Precio: $" << precios[pos]
-                 << " | Stock disponible: " << cantidades[pos] << endl;
-
-            int cantidadVender = leerEntero("Cantidad a vender (0 para cancelar este articulo): ", 0);
-
-            if (cantidadVender == 0)
-            {
-                cout << "Articulo omitido." << endl;
-            }
-            else if (cantidadVender > cantidades[pos])
-            {
-                cout << "Stock insuficiente. Solo hay " << cantidades[pos] << " unidades disponibles." << endl;
-            }
-            else
-            {
-                float subtotal = cantidadVender * precios[pos];
-                cantidades[pos] -= cantidadVender;
-                unidadesVendidas[pos] += cantidadVender;
-                totalCompraActual += subtotal;
-                seVendioAlgo = true;
-
-                cout << "Agregado: " << cantidadVender << " x " << nombres[pos]
-                     << " = $" << subtotal << endl;
+        int pos = -1;
+        for (int i = 0; i < totalProductos; i++) {
+            if (inventario[i].nombre == nombreProd) {
+                pos = i;
             }
         }
 
-        seguirComprando = leerEntero("Desea agregar otro producto a esta venta? (1 = Si, 0 = No): ", 0);
+        if (pos == -1) {
+            cout << "Producto no encontrado." << endl;
+        } else {
+            // Si el producto esta agotado, pregunta si desea agregar mas unidades
+            if (inventario[pos].cantidad == 0) {
+                cout << "Este producto esta AGOTADO." << endl;
+                int agregarMas;
+                cout << "Desea agregar mas unidades al inventario? (1 = Si, 0 = No): ";
+                cin >> agregarMas;
+                while (cin.fail() || (agregarMas != 0 && agregarMas != 1)) {
+                    if (cin.fail()) {
+                        cin.clear();
+                        string limpiar;
+                        cin >> limpiar;
+                    }
+                    cout << "Opcion invalida. Escriba 1 (Si) o 0 (No): ";
+                    cin >> agregarMas;
+                }
+
+                if (agregarMas == 1) {
+                    int nuevasUnidades;
+                    cout << "Cuantas unidades desea agregar?: ";
+                    cin >> nuevasUnidades;
+                    while (cin.fail() || nuevasUnidades < 1) {
+                        if (cin.fail()) {
+                            cin.clear();
+                            string limpiar;
+                            cin >> limpiar;
+                        }
+                        cout << "Cantidad invalida. Ingrese 1 o mas: ";
+                        cin >> nuevasUnidades;
+                    }
+                    inventario[pos].cantidad = inventario[pos].cantidad + nuevasUnidades;
+                    cout << "Stock actualizado! Ahora hay " << inventario[pos].cantidad << " unidades." << endl;
+                }
+            }
+
+            // Si ya tiene disponibilidad, procede a vender
+            if (inventario[pos].cantidad > 0) {
+                cout << "Producto: " << inventario[pos].nombre
+                     << " | Precio: $" << inventario[pos].precio
+                     << " | Disponibles: " << inventario[pos].cantidad << endl;
+
+                int cantVender;
+                cout << "Cantidad a vender: ";
+                cin >> cantVender;
+                while (cin.fail() || cantVender < 1 || cantVender > inventario[pos].cantidad) {
+                    if (cin.fail()) {
+                        cin.clear();
+                        string limpiar;
+                        cin >> limpiar;
+                    }
+                    cout << "Cantidad no valida o stock insuficiente (disponibles: "
+                         << inventario[pos].cantidad << "). Ingrese otra cantidad: ";
+                    cin >> cantVender;
+                }
+
+                float subtotal = cantVender * inventario[pos].precio;
+                inventario[pos].cantidad = inventario[pos].cantidad - cantVender;
+                inventario[pos].vendidos = inventario[pos].vendidos + cantVender;
+                totalCliente = totalCliente + subtotal;
+                seVendioAlgo = 1;
+
+                cout << "Agregado! Subtotal: $" << subtotal << endl;
+            }
+        }
+
+        cout << "Desea agregar otro producto a la venta? (1 = Si, 0 = No): ";
+        cin >> seguirComprando;
+        while (cin.fail() || (seguirComprando != 0 && seguirComprando != 1)) {
+            if (cin.fail()) {
+                cin.clear();
+                string limpiar;
+                cin >> limpiar;
+            }
+            cout << "Opcion invalida. Escriba 1 (Si) o 0 (No): ";
+            cin >> seguirComprando;
+        }
 
     } while (seguirComprando == 1);
 
-    if (seVendioAlgo)
-    {
-        totalRecaudado += totalCompraActual;
+    if (seVendioAlgo == 1) {
+        totalCaja = totalCaja + totalCliente;
         totalVentas++;
-        cout << fixed << setprecision(2);
-        cout << "\n===============================" << endl;
-        cout << "VENTA FINALIZADA CON EXITO" << endl;
-        cout << "Total a pagar: $" << totalCompraActual << endl;
+        cout << endl;
         cout << "===============================" << endl;
-    }
-    else
-    {
+        cout << "VENTA FINALIZADA" << endl;
+        cout << "Total a pagar: $" << totalCliente << endl;
+        cout << "===============================" << endl;
+    } else {
         cout << "No se realizo ninguna venta." << endl;
     }
 }
 
-void generarReporte()
-{
-    cout << fixed << setprecision(2);
-    cout << "\n===== REPORTE DE RESULTADOS =====" << endl;
-    cout << "Ventas realizadas:       " << totalVentas << endl;
-    cout << "Total recaudado en caja: $" << totalRecaudado << endl;
+void generarReporte() {
+    cout << endl;
+    cout << "==========================================" << endl;
+    cout << "          REPORTE DE RESULTADOS           " << endl;
+    cout << "==========================================" << endl;
+    cout << "Ventas realizadas: " << totalVentas << endl;
+    cout << "Total recaudado en caja: $" << totalCaja << endl;
 
-    cout << "\n--- Resumen de Productos Vendidos ---" << endl;
-    bool huboVentas = false;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (unidadesVendidas[i] > 0)
-        {
-            cout << "- " << left << setw(15) << nombres[i]
-                 << " | Vendidos: " << setw(4) << unidadesVendidas[i]
-                 << " | Ingreso: $" << (unidadesVendidas[i] * precios[i]) << endl;
-            huboVentas = true;
+    cout << endl;
+    cout << "--- Productos Vendidos ---" << endl;
+    int huboVentas = 0;
+    for (int i = 0; i < totalProductos; i++) {
+        if (inventario[i].vendidos > 0) {
+            cout << "- " << inventario[i].nombre
+                 << " | Vendidos: " << inventario[i].vendidos
+                 << " | Ingreso: $" << (inventario[i].vendidos * inventario[i].precio) << endl;
+            huboVentas = 1;
         }
     }
-    if (!huboVentas)
-    {
-        cout << "Aun no se han registrado ventas de productos." << endl;
+    if (huboVentas == 0) {
+        cout << "Aun no se han vendido productos." << endl;
     }
 
-    cout << "\n--- Alerta de Stock Critico (<= 5 unidades) ---" << endl;
-    bool hayCriticos = false;
-    for (int i = 0; i < totalProductos; i++)
-    {
-        if (cantidades[i] <= 5)
-        {
-            cout << "- " << left << setw(15) << nombres[i]
-                 << " [" << clasificaciones[i] << "] -> Quedan: "
-                 << cantidades[i] << " (" << estadoStock(cantidades[i]) << ")" << endl;
-            hayCriticos = true;
+    cout << endl;
+    cout << "--- Alerta de Stock Bajo (5 o menos unidades) ---" << endl;
+    int hayBajos = 0;
+    for (int i = 0; i < totalProductos; i++) {
+        if (inventario[i].cantidad <= 5) {
+            cout << "- " << inventario[i].nombre
+                 << " | Quedan: " << inventario[i].cantidad << endl;
+            hayBajos = 1;
         }
     }
-    if (!hayCriticos)
-    {
-        cout << "Todos los productos tienen stock suficiente." << endl;
+    if (hayBajos == 0) {
+        cout << "Todos los productos tienen buen stock." << endl;
     }
+    cout << "==========================================" << endl;
 }
