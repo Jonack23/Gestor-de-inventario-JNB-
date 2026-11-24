@@ -4,9 +4,9 @@
         <attribute name="name" value="Tienda JNB"/>
         <attribute name="authors" value="Nathali, Brandon, Jonathan"/>
         <attribute name="about" value="Sistema de Inventario y Ventas Tienda JNB"/>
-        <attribute name="saved" value="2026-11-24 09:48:58 a.&#160;m."/>
+        <attribute name="saved" value="2026-11-24 10:58:29 a.&#160;m."/>
         <attribute name="created" value="SmFpbWU7Sk9OQUNLUy1MQVBUT1A7MjAyNi0xMS0yNDswOTo0MTo1MiBhLsKgbS47MzEwMA=="/>
-        <attribute name="edited" value="SmFpbWU7Sk9OQUNLUy1MQVBUT1A7MjAyNi0xMS0yNDswOTo0ODo1OCBhLsKgbS47MTszMjIx"/>
+        <attribute name="edited" value="SmFpbWU7Sk9OQUNLUy1MQVBUT1A7MjAyNi0xMS0yNDsxMDo1ODoyOSBhLsKgbS47MjszMjEz"/>
     </attributes>
     <function name="Main" type="None" variable="">
         <parameters/>
