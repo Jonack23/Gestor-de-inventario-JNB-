@@ -1,0 +1,569 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="Tienda JNB"/>
+        <attribute name="authors" value="Nathali, Brandon, Jonathan"/>
+        <attribute name="about" value="Sistema de Inventario y Ventas Tienda JNB"/>
+        <attribute name="saved" value="2026-11-24 10:58:29 a.&#160;m."/>
+        <attribute name="created" value="SmFpbWU7Sk9OQUNLUy1MQVBUT1A7MjAyNi0xMS0yNDswOTo0MTo1MiBhLsKgbS47MzEwMA=="/>
+        <attribute name="edited" value="SmFpbWU7Sk9OQUNLUy1MQVBUT1A7MjAyNi0xMS0yNDsxMDo1ODoyOSBhLsKgbS47MjszMjEz"/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="usuariosNombre" type="String" array="True" size="3"/>
+            <declare name="usuariosPass" type="String" array="True" size="3"/>
+            <declare name="usuariosRol" type="String" array="True" size="3"/>
+            <declare name="totalUsuarios" type="Integer" array="False" size=""/>
+            <assign variable="totalUsuarios" expression="3"/>
+            <assign variable="usuariosNombre[0]" expression="&quot;Jona.admin&quot;"/>
+            <assign variable="usuariosPass[0]" expression="&quot;Jonack123&quot;"/>
+            <assign variable="usuariosRol[0]" expression="&quot;jefe&quot;"/>
+            <assign variable="usuariosNombre[1]" expression="&quot;Brandon.0&quot;"/>
+            <assign variable="usuariosPass[1]" expression="&quot;Brandonx0&quot;"/>
+            <assign variable="usuariosRol[1]" expression="&quot;empleado&quot;"/>
+            <assign variable="usuariosNombre[2]" expression="&quot;Natali.00&quot;"/>
+            <assign variable="usuariosPass[2]" expression="&quot;Natali000&quot;"/>
+            <assign variable="usuariosRol[2]" expression="&quot;empleado&quot;"/>
+            <declare name="prodNombre" type="String" array="True" size="14"/>
+            <declare name="prodClasificacion" type="String" array="True" size="14"/>
+            <declare name="prodCantidad" type="Integer" array="True" size="14"/>
+            <declare name="prodPrecio" type="Real" array="True" size="14"/>
+            <declare name="prodVendidos" type="Integer" array="True" size="14"/>
+            <declare name="totalProductos" type="Integer" array="False" size=""/>
+            <declare name="totalCaja" type="Real" array="False" size=""/>
+            <declare name="totalVentas" type="Integer" array="False" size=""/>
+            <assign variable="totalCaja" expression="0"/>
+            <assign variable="totalVentas" expression="0"/>
+            <assign variable="totalProductos" expression="cargarInventarioInicial(prodNombre, prodClasificacion, prodCantidad, prodPrecio, prodVendidos)"/>
+            <declare name="programaActivo" type="Integer" array="False" size=""/>
+            <assign variable="programaActivo" expression="1"/>
+            <declare name="posUsuario" type="Integer" array="False" size=""/>
+            <declare name="usuarioActivo" type="String" array="False" size=""/>
+            <declare name="rolActivo" type="String" array="False" size=""/>
+            <declare name="opcion" type="Integer" array="False" size=""/>
+            <while expression="programaActivo == 1">
+                <assign variable="posUsuario" expression="iniciarSesion(usuariosNombre, usuariosPass, usuariosRol, totalUsuarios)"/>
+                <if expression="posUsuario == -1">
+                    <then>
+                        <assign variable="programaActivo" expression="0"/>
+                    </then>
+                    <else>
+                        <assign variable="usuarioActivo" expression="usuariosNombre[posUsuario]"/>
+                        <assign variable="rolActivo" expression="usuariosRol[posUsuario]"/>
+                        <do expression="opcion != 0 &amp;&amp; opcion != 7">
+                            <output expression="&quot;===== TIENDA JNB | Usuario: &quot; &amp; usuarioActivo &amp; &quot; (&quot; &amp; rolActivo &amp; &quot;) =====&quot;" newline="True"/>
+                            <if expression="rolActivo == &quot;jefe&quot;">
+                                <then>
+                                    <output expression="&quot;1. Registrar producto&quot;" newline="True"/>
+                                </then>
+                                <else/>
+                            </if>
+                            <output expression="&quot;2. Listar inventario | 3. Buscar | 4. Filtrar | 5. Venta&quot;" newline="True"/>
+                            <if expression="rolActivo == &quot;jefe&quot;">
+                                <then>
+                                    <output expression="&quot;6. Reporte de resultados&quot;" newline="True"/>
+                                </then>
+                                <else/>
+                            </if>
+                            <output expression="&quot;7. Cerrar sesion | 8. Ayuda | 9. Integrantes | 0. Salir&quot;" newline="True"/>
+                            <input variable="opcion"/>
+                            <while expression="opcion &lt; 0 || opcion &gt; 9">
+                                <output expression="&quot;Opcion no valida. Escriba un numero de 0 a 9:&quot;" newline="True"/>
+                                <input variable="opcion"/>
+                            </while>
+                            <if expression="opcion == 1">
+                                <then>
+                                    <if expression="rolActivo == &quot;jefe&quot;">
+                                        <then>
+                                            <assign variable="totalProductos" expression="registrarProducto(prodNombre, prodClasificacion, prodCantidad, prodPrecio, prodVendidos, totalProductos)"/>
+                                        </then>
+                                        <else>
+                                            <output expression="&quot;Acceso denegado: solo el jefe puede registrar productos.&quot;" newline="True"/>
+                                        </else>
+                                    </if>
+                                </then>
+                                <else>
+                                    <if expression="opcion == 2">
+                                        <then>
+                                            <call expression="listarInventario(prodNombre, prodClasificacion, prodCantidad, prodPrecio, totalProductos)"/>
+                                        </then>
+                                        <else>
+                                            <if expression="opcion == 3">
+                                                <then>
+                                                    <call expression="buscarPorNombre(prodNombre, prodClasificacion, prodCantidad, prodPrecio, totalProductos)"/>
+                                                </then>
+                                                <else>
+                                                    <if expression="opcion == 4">
+                                                        <then>
+                                                            <call expression="filtrarPorClasificacion(prodNombre, prodClasificacion, prodCantidad, prodPrecio, totalProductos)"/>
+                                                        </then>
+                                                        <else>
+                                                            <if expression="opcion == 5">
+                                                                <then>
+                                                                    <assign variable="totalCaja" expression="realizarVenta(prodNombre, prodCantidad, prodPrecio, prodVendidos, totalProductos, totalCaja)"/>
+                                                                </then>
+                                                                <else>
+                                                                    <if expression="opcion == 6">
+                                                                        <then>
+                                                                            <if expression="rolActivo == &quot;jefe&quot;">
+                                                                                <then>
+                                                                                    <call expression="generarReporte(prodNombre, prodCantidad, prodPrecio, prodVendidos, totalProductos, totalCaja)"/>
+                                                                                </then>
+                                                                                <else>
+                                                                                    <output expression="&quot;Acceso denegado: solo el jefe puede ver reportes.&quot;" newline="True"/>
+                                                                                </else>
+                                                                            </if>
+                                                                        </then>
+                                                                        <else>
+                                                                            <if expression="opcion == 7">
+                                                                                <then>
+                                                                                    <output expression="&quot;Cerrando sesion...&quot;" newline="True"/>
+                                                                                </then>
+                                                                                <else>
+                                                                                    <if expression="opcion == 8">
+                                                                                        <then>
+                                                                                            <call expression="mostrarAyuda()"/>
+                                                                                        </then>
+                                                                                        <else>
+                                                                                            <if expression="opcion == 9">
+                                                                                                <then>
+                                                                                                    <call expression="mostrarIntegrantes()"/>
+                                                                                                </then>
+                                                                                                <else>
+                                                                                                    <output expression="&quot;Saliendo del sistema...&quot;" newline="True"/>
+                                                                                                    <assign variable="programaActivo" expression="0"/>
+                                                                                                </else>
+                                                                                            </if>
+                                                                                        </else>
+                                                                                    </if>
+                                                                                </else>
+                                                                            </if>
+                                                                        </else>
+                                                                    </if>
+                                                                </else>
+                                                            </if>
+                                                        </else>
+                                                    </if>
+                                                </else>
+                                            </if>
+                                        </else>
+                                    </if>
+                                </else>
+                            </if>
+                        </do>
+                    </else>
+                </if>
+            </while>
+        </body>
+    </function>
+    <function name="buscarPorNombre" type="None" variable="">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodClasificacion" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="buscado" type="String" array="False" size=""/>
+            <declare name="encontrado" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <output expression="&quot;Ingrese el nombre del producto a buscar:&quot;" newline="True"/>
+            <input variable="buscado"/>
+            <assign variable="encontrado" expression="0"/>
+            <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                <if expression="prodNombre[i] == buscado">
+                    <then>
+                        <output expression="(i + 1) &amp; &quot; | &quot; &amp; prodNombre[i] &amp; &quot; | &quot; &amp; prodClasificacion[i] &amp; &quot; | Stock: &quot; &amp; prodCantidad[i] &amp; &quot; | $&quot; &amp; prodPrecio[i]" newline="True"/>
+                        <assign variable="encontrado" expression="1"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+            <if expression="encontrado == 0">
+                <then>
+                    <output expression="&quot;Producto no encontrado.&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+        </body>
+    </function>
+    <function name="cargarInventarioInicial" type="Integer" variable="total">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodClasificacion" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="prodVendidos" type="Integer" array="True"/>
+        </parameters>
+        <body>
+            <declare name="total" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <for variable="i" start="0" end="13" direction="inc" step="1">
+                <assign variable="prodVendidos[i]" expression="0"/>
+            </for>
+            <assign variable="prodNombre[0]" expression="&quot;coca_cola&quot;"/>
+            <assign variable="prodClasificacion[0]" expression="&quot;bebida&quot;"/>
+            <assign variable="prodCantidad[0]" expression="10"/>
+            <assign variable="prodPrecio[0]" expression="1.50"/>
+            <assign variable="prodNombre[1]" expression="&quot;pepsi&quot;"/>
+            <assign variable="prodClasificacion[1]" expression="&quot;bebida&quot;"/>
+            <assign variable="prodCantidad[1]" expression="5"/>
+            <assign variable="prodPrecio[1]" expression="1.20"/>
+            <assign variable="prodNombre[2]" expression="&quot;agua&quot;"/>
+            <assign variable="prodClasificacion[2]" expression="&quot;bebida&quot;"/>
+            <assign variable="prodCantidad[2]" expression="20"/>
+            <assign variable="prodPrecio[2]" expression="0.80"/>
+            <assign variable="prodNombre[3]" expression="&quot;lays&quot;"/>
+            <assign variable="prodClasificacion[3]" expression="&quot;snack&quot;"/>
+            <assign variable="prodCantidad[3]" expression="8"/>
+            <assign variable="prodPrecio[3]" expression="1.30"/>
+            <assign variable="prodNombre[4]" expression="&quot;m&amp;m's&quot;"/>
+            <assign variable="prodClasificacion[4]" expression="&quot;snack&quot;"/>
+            <assign variable="prodCantidad[4]" expression="6"/>
+            <assign variable="prodPrecio[4]" expression="1.20"/>
+            <assign variable="prodNombre[5]" expression="&quot;gomitas&quot;"/>
+            <assign variable="prodClasificacion[5]" expression="&quot;snack&quot;"/>
+            <assign variable="prodCantidad[5]" expression="10"/>
+            <assign variable="prodPrecio[5]" expression="0.50"/>
+            <assign variable="prodNombre[6]" expression="&quot;detergente&quot;"/>
+            <assign variable="prodClasificacion[6]" expression="&quot;limpieza&quot;"/>
+            <assign variable="prodCantidad[6]" expression="3"/>
+            <assign variable="prodPrecio[6]" expression="2.50"/>
+            <assign variable="prodNombre[7]" expression="&quot;lejia&quot;"/>
+            <assign variable="prodClasificacion[7]" expression="&quot;limpieza&quot;"/>
+            <assign variable="prodCantidad[7]" expression="0"/>
+            <assign variable="prodPrecio[7]" expression="1.80"/>
+            <assign variable="prodNombre[8]" expression="&quot;jabon&quot;"/>
+            <assign variable="prodClasificacion[8]" expression="&quot;limpieza&quot;"/>
+            <assign variable="prodCantidad[8]" expression="5"/>
+            <assign variable="prodPrecio[8]" expression="1.00"/>
+            <assign variable="prodNombre[9]" expression="&quot;leche&quot;"/>
+            <assign variable="prodClasificacion[9]" expression="&quot;lacteos&quot;"/>
+            <assign variable="prodCantidad[9]" expression="10"/>
+            <assign variable="prodPrecio[9]" expression="1.20"/>
+            <assign variable="prodNombre[10]" expression="&quot;queso&quot;"/>
+            <assign variable="prodClasificacion[10]" expression="&quot;lacteos&quot;"/>
+            <assign variable="prodCantidad[10]" expression="5"/>
+            <assign variable="prodPrecio[10]" expression="2.00"/>
+            <assign variable="prodNombre[11]" expression="&quot;yogurt&quot;"/>
+            <assign variable="prodClasificacion[11]" expression="&quot;lacteos&quot;"/>
+            <assign variable="prodCantidad[11]" expression="8"/>
+            <assign variable="prodPrecio[11]" expression="1.50"/>
+            <assign variable="total" expression="12"/>
+        </body>
+    </function>
+    <function name="filtrarPorClasificacion" type="None" variable="">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodClasificacion" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="categoria" type="String" array="False" size=""/>
+            <declare name="encontrados" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <output expression="&quot;Ingrese la clasificacion a mostrar:&quot;" newline="True"/>
+            <input variable="categoria"/>
+            <assign variable="encontrados" expression="0"/>
+            <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                <if expression="prodClasificacion[i] == categoria">
+                    <then>
+                        <output expression="prodNombre[i] &amp; &quot; | Stock: &quot; &amp; prodCantidad[i] &amp; &quot; | $&quot; &amp; prodPrecio[i]" newline="True"/>
+                        <assign variable="encontrados" expression="encontrados + 1"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+            <if expression="encontrados == 0">
+                <then>
+                    <output expression="&quot;No hay productos en esa clasificacion.&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+        </body>
+    </function>
+    <function name="generarReporte" type="None" variable="">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="prodVendidos" type="Integer" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+            <parameter name="totalCaja" type="Real" array="False"/>
+        </parameters>
+        <body>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="huboVentas" type="Integer" array="False" size=""/>
+            <declare name="hayBajos" type="Integer" array="False" size=""/>
+            <output expression="&quot;=== REPORTE DE RESULTADOS | Caja: $&quot; &amp; totalCaja &amp; &quot; ===&quot;" newline="True"/>
+            <assign variable="huboVentas" expression="0"/>
+            <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                <if expression="prodVendidos[i] &gt; 0">
+                    <then>
+                        <output expression="prodNombre[i] &amp; &quot; | Vendidos: &quot; &amp; prodVendidos[i] &amp; &quot; | Ingreso: $&quot; &amp; (prodVendidos[i] * prodPrecio[i])" newline="True"/>
+                        <assign variable="huboVentas" expression="1"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+            <if expression="huboVentas == 0">
+                <then>
+                    <output expression="&quot;Aun no se han vendido productos.&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+            <assign variable="hayBajos" expression="0"/>
+            <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                <if expression="prodCantidad[i] &lt;= 5">
+                    <then>
+                        <output expression="&quot;ALERTA STOCK BAJO: &quot; &amp; prodNombre[i] &amp; &quot; | Quedan: &quot; &amp; prodCantidad[i]" newline="True"/>
+                        <assign variable="hayBajos" expression="1"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+            <if expression="hayBajos == 0">
+                <then>
+                    <output expression="&quot;Todos los productos tienen buen stock.&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+        </body>
+    </function>
+    <function name="iniciarSesion" type="Integer" variable="posEncontrada">
+        <parameters>
+            <parameter name="usuariosNombre" type="String" array="True"/>
+            <parameter name="usuariosPass" type="String" array="True"/>
+            <parameter name="usuariosRol" type="String" array="True"/>
+            <parameter name="totalUsuarios" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="intentos" type="Integer" array="False" size=""/>
+            <declare name="usuarioIngresado" type="String" array="False" size=""/>
+            <declare name="passwordIngresada" type="String" array="False" size=""/>
+            <declare name="posEncontrada" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <assign variable="intentos" expression="0"/>
+            <assign variable="posEncontrada" expression="-1"/>
+            <output expression="&quot;=== BIENVENIDO A SISTEMA TIENDA JNB ===&quot;" newline="True"/>
+            <while expression="intentos &lt; 3 &amp;&amp; posEncontrada == -1">
+                <output expression="&quot;Usuario:&quot;" newline="True"/>
+                <input variable="usuarioIngresado"/>
+                <output expression="&quot;Contrasena:&quot;" newline="True"/>
+                <input variable="passwordIngresada"/>
+                <for variable="i" start="0" end="totalUsuarios - 1" direction="inc" step="1">
+                    <if expression="usuariosNombre[i] == usuarioIngresado &amp;&amp; usuariosPass[i] == passwordIngresada">
+                        <then>
+                            <output expression="&quot;Acceso concedido. Bienvenido/a &quot; &amp; usuariosNombre[i]" newline="True"/>
+                            <assign variable="posEncontrada" expression="i"/>
+                        </then>
+                        <else/>
+                    </if>
+                </for>
+                <if expression="posEncontrada == -1">
+                    <then>
+                        <assign variable="intentos" expression="intentos + 1"/>
+                        <output expression="&quot;Datos incorrectos. Intentos: &quot; &amp; intentos &amp; &quot; de 3&quot;" newline="True"/>
+                    </then>
+                    <else/>
+                </if>
+            </while>
+            <if expression="posEncontrada == -1">
+                <then>
+                    <output expression="&quot;Superaste el limite de intentos. Sistema bloqueado.&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+        </body>
+    </function>
+    <function name="listarInventario" type="None" variable="">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodClasificacion" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="estado" type="String" array="False" size=""/>
+            <output expression="&quot;=== INVENTARIO DE TIENDA JNB ===&quot;" newline="True"/>
+            <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                <if expression="prodCantidad[i] == 0">
+                    <then>
+                        <assign variable="estado" expression="&quot;AGOTADO&quot;"/>
+                    </then>
+                    <else>
+                        <if expression="prodCantidad[i] &lt;= 5">
+                            <then>
+                                <assign variable="estado" expression="&quot;Stock bajo&quot;"/>
+                            </then>
+                            <else>
+                                <assign variable="estado" expression="&quot;Disponible&quot;"/>
+                            </else>
+                        </if>
+                    </else>
+                </if>
+                <output expression="(i + 1) &amp; &quot; | &quot; &amp; prodNombre[i] &amp; &quot; | &quot; &amp; prodClasificacion[i] &amp; &quot; | Stock: &quot; &amp; prodCantidad[i] &amp; &quot; | $&quot; &amp; prodPrecio[i] &amp; &quot; | &quot; &amp; estado" newline="True"/>
+            </for>
+        </body>
+    </function>
+    <function name="mostrarAyuda" type="None" variable="">
+        <parameters/>
+        <body>
+            <output expression="&quot;AYUDA: Escriba el numero de opcion y nombres en minusculas sin espacios.&quot;" newline="True"/>
+        </body>
+    </function>
+    <function name="mostrarIntegrantes" type="None" variable="">
+        <parameters/>
+        <body>
+            <output expression="&quot;1. Nathali Beatriz Lopez Mejia - [00364526]&quot;" newline="True"/>
+            <output expression="&quot;2. Brandon Anthonio Salguero Avelar - [00371926]&quot;" newline="True"/>
+            <output expression="&quot;3. Jonathan Gerardo Guzman Guevara - [00092523]&quot;" newline="True"/>
+        </body>
+    </function>
+    <function name="realizarVenta" type="Real" variable="totalCaja">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="prodVendidos" type="Integer" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+            <parameter name="totalCaja" type="Real" array="False"/>
+        </parameters>
+        <body>
+            <declare name="totalCliente" type="Real" array="False" size=""/>
+            <declare name="seguirComprando" type="Integer" array="False" size=""/>
+            <declare name="seVendioAlgo" type="Integer" array="False" size=""/>
+            <declare name="nombreProd" type="String" array="False" size=""/>
+            <declare name="pos" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="agregarMas" type="Integer" array="False" size=""/>
+            <declare name="nuevasUnidades" type="Integer" array="False" size=""/>
+            <declare name="cantVender" type="Integer" array="False" size=""/>
+            <declare name="subtotal" type="Real" array="False" size=""/>
+            <assign variable="totalCliente" expression="0"/>
+            <assign variable="seVendioAlgo" expression="0"/>
+            <do expression="seguirComprando == 1">
+                <output expression="&quot;Ingrese el nombre del producto a vender:&quot;" newline="True"/>
+                <input variable="nombreProd"/>
+                <assign variable="pos" expression="-1"/>
+                <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                    <if expression="prodNombre[i] == nombreProd">
+                        <then>
+                            <assign variable="pos" expression="i"/>
+                        </then>
+                        <else/>
+                    </if>
+                </for>
+                <if expression="pos == -1">
+                    <then>
+                        <output expression="&quot;Producto no encontrado.&quot;" newline="True"/>
+                    </then>
+                    <else>
+                        <if expression="prodCantidad[pos] == 0">
+                            <then>
+                                <output expression="&quot;Producto AGOTADO. Agregar mas unidades? (1=Si, 0=No):&quot;" newline="True"/>
+                                <input variable="agregarMas"/>
+                                <if expression="agregarMas == 1">
+                                    <then>
+                                        <output expression="&quot;Cuantas unidades desea agregar?:&quot;" newline="True"/>
+                                        <input variable="nuevasUnidades"/>
+                                        <assign variable="prodCantidad[pos]" expression="prodCantidad[pos] + nuevasUnidades"/>
+                                    </then>
+                                    <else/>
+                                </if>
+                            </then>
+                            <else/>
+                        </if>
+                        <if expression="prodCantidad[pos] &gt; 0">
+                            <then>
+                                <output expression="&quot;Cantidad a vender (Disponibles: &quot; &amp; prodCantidad[pos] &amp; &quot;):&quot;" newline="True"/>
+                                <input variable="cantVender"/>
+                                <while expression="cantVender &lt; 1 || cantVender &gt; prodCantidad[pos]">
+                                    <output expression="&quot;Cantidad invalida. Ingrese otra:&quot;" newline="True"/>
+                                    <input variable="cantVender"/>
+                                </while>
+                                <assign variable="subtotal" expression="cantVender * prodPrecio[pos]"/>
+                                <assign variable="prodCantidad[pos]" expression="prodCantidad[pos] - cantVender"/>
+                                <assign variable="prodVendidos[pos]" expression="prodVendidos[pos] + cantVender"/>
+                                <assign variable="totalCliente" expression="totalCliente + subtotal"/>
+                                <assign variable="seVendioAlgo" expression="1"/>
+                                <output expression="&quot;Agregado! Subtotal: $&quot; &amp; subtotal" newline="True"/>
+                            </then>
+                            <else/>
+                        </if>
+                    </else>
+                </if>
+                <output expression="&quot;Desea agregar otro producto? (1=Si, 0=No):&quot;" newline="True"/>
+                <input variable="seguirComprando"/>
+            </do>
+            <if expression="seVendioAlgo == 1">
+                <then>
+                    <assign variable="totalCaja" expression="totalCaja + totalCliente"/>
+                    <output expression="&quot;VENTA FINALIZADA. Total a pagar: $&quot; &amp; totalCliente" newline="True"/>
+                </then>
+                <else>
+                    <output expression="&quot;No se realizo ninguna venta.&quot;" newline="True"/>
+                </else>
+            </if>
+        </body>
+    </function>
+    <function name="registrarProducto" type="Integer" variable="totalProductos">
+        <parameters>
+            <parameter name="prodNombre" type="String" array="True"/>
+            <parameter name="prodClasificacion" type="String" array="True"/>
+            <parameter name="prodCantidad" type="Integer" array="True"/>
+            <parameter name="prodPrecio" type="Real" array="True"/>
+            <parameter name="prodVendidos" type="Integer" array="True"/>
+            <parameter name="totalProductos" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="nombre" type="String" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="existe" type="Integer" array="False" size=""/>
+            <declare name="extra" type="Integer" array="False" size=""/>
+            <if expression="totalProductos &gt;= 14">
+                <then>
+                    <output expression="&quot;El inventario esta lleno.&quot;" newline="True"/>
+                </then>
+                <else>
+                    <output expression="&quot;Nombre del producto (sin espacios):&quot;" newline="True"/>
+                    <input variable="nombre"/>
+                    <assign variable="existe" expression="-1"/>
+                    <for variable="i" start="0" end="totalProductos - 1" direction="inc" step="1">
+                        <if expression="prodNombre[i] == nombre">
+                            <then>
+                                <assign variable="existe" expression="i"/>
+                            </then>
+                            <else/>
+                        </if>
+                    </for>
+                    <if expression="existe != -1">
+                        <then>
+                            <output expression="&quot;Producto ya existe. Cantidad a sumar:&quot;" newline="True"/>
+                            <input variable="extra"/>
+                            <assign variable="prodCantidad[existe]" expression="prodCantidad[existe] + extra"/>
+                        </then>
+                        <else>
+                            <assign variable="prodNombre[totalProductos]" expression="nombre"/>
+                            <output expression="&quot;Clasificacion (bebida, snack, limpieza, lacteos):&quot;" newline="True"/>
+                            <input variable="prodClasificacion[totalProductos]"/>
+                            <output expression="&quot;Cantidad:&quot;" newline="True"/>
+                            <input variable="prodCantidad[totalProductos]"/>
+                            <output expression="&quot;Precio:&quot;" newline="True"/>
+                            <input variable="prodPrecio[totalProductos]"/>
+                            <assign variable="prodVendidos[totalProductos]" expression="0"/>
+                            <assign variable="totalProductos" expression="totalProductos + 1"/>
+                            <output expression="&quot;Producto registrado con exito!&quot;" newline="True"/>
+                        </else>
+                    </if>
+                </else>
+            </if>
+        </body>
+    </function>
+</flowgorithm>
