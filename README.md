@@ -1,0 +1,1 @@
+El módulo de ventas y reportes de Tienda JNB   gestiona el registro de compras de los clientes, valida la disponibilidad del stock (permitiendo reponer unidades si un producto está agotado), actualiza las existencias, unidades vendidas y el dinero en caja, y genera el reporte con el total de ventas, ingresos y alertas de stock bajo
